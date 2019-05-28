@@ -6,7 +6,7 @@ function [ur,vr,thetad]=my_rotate_pres(u,v,p,thetad)
 %     u is vector velocity, ur is rotated vector velocity
 %      direction of theta is counterclockwise, based on E vel 1st, N vel second
 if nargin==1;
-    v=imagg(u);
+    v=imag(u);
     u=real(u);
         maxvar=1;
 
