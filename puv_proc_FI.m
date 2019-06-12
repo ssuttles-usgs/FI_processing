@@ -9,8 +9,8 @@ kN2 = 30*0.4e-2
 % advbfn = '9885advb-cal.nc'; % burstfile name
 % advsfn = '9885advs-cal.nc'; % statistics filename
 
-advbfn = fullfile('C:\Users\ssuttles\data\FireIsland\analysis\Taran\9917advb-cal.nc'); % burstfile name
-advsfn = fullfile('C:\Users\ssuttles\data\FireIsland\analysis\Taran\9917advs-cal.nc'); % statistics filename
+advbfn = fullfile('/media/taran/DATADRIVE2/Obs_data/data_netcdf/9917advb-cal.nc'); % burstfile name
+advsfn = fullfile('/media/taran/DATADRIVE2/Obs_data/data_netcdf/9917advs-cal.nc'); % statistics filename
 
 %advbfn = fullfile('/media/taran/DATADRIVE2/Obs_data/data_netcdf/9885advb-cal.nc');
 %advsfn = fullfile('/media/taran/DATADRIVE2/Obs_data/data_netcdf/9885advs-cal.nc'); 
@@ -79,14 +79,14 @@ nominal_depth = ncreadatt(advbfn,'/','WATER_DEPTH') % nominal
 %[sd1 az1 sd2 az2]=pcastats(u_1205,v_1206,25,1)
 
 %% process bursts with no QA/QC
-for n = 1:length(dn)
- nt1=680; nt2=690; 
+%for n = 1:length(dn)
+ nt1=680; nt2=730; 
 count=1; 
-%for n=nt1:nt2
+for n=nt1:nt2
    if(~isnan(depth(n)))
       bn = ncread(advbfn,'burst',n,1);      % this burst number from beginning...might just want to go from 1 to nb
       jtb = double(ncread(advbfn,'time',[1 n],[1 1]))+......
-            double(ncread(advbfn,'time2',[1 n],[1 1]))/(3600*24*1000); 
+            double(ncread(advbfn,'time2',[1 n],[1 1])/(3600*24*1000)); 
       dnsb = datestr(datenum(gregorian(jtb))); 
       fprintf(1,'Burst %d at %s\n',bn,dnsb);
       u = ncread(advbfn,'u_1205',[1 n],[Inf 1])/100;
@@ -105,37 +105,24 @@ count=1;
       % TODO - QA/QC, replace sketchy values here
       
       % TODO - Do we want to do any filtering here?
-    
       
       % quick look at raw data
-        figure(4); clf
+ 
+     figure(4); clf
      [sd1 az1 sd2 az2]=pcastats(u*100,v*100,50,1);
      % size(fs)
      % Get the statistics directly 
      UBS(n) = ubstatsr( u, v, fs );
      
-     if 0
-         figure(5);clf
-         plot(UBS(n).ur,UBS(n).vr,'.')
-         xlabel('ur, [m ^. s^{-1}]')
-         ylabel('vr, [m ^. s^{-1}]')
-         title(sprintf('Rotated Burst Velocities burst= %d , %s',bn,dnsb))
-         set(gca,'xlim',[-1 1]);
-         xlim=get(gca,'xlim');
-         set(gca,'ylim',xlim);
-
-         pause(0.2)
-     end
-     
      % get ubr, Hrms
-     PUV(n) = puvq(p, (u), (v), depth(n), zp(n), zr(n), fs, 1050, 1030, 0.04, 1/6);
+     PUV(n) = puvq(p, (u), (v), depth(n), zp(n), zr(n), fs, 1050, 1030., 0.04, 1/6);
      
      kh = qkhfs( 2*pi/PUV(n).Tr, depth(n) );
      Tr(n)=PUV(n).Tr; 
      Ubr(n)=PUV(n).ubr ; 
      Hrmsu(n)=PUV(n).Hrmsu; 
      k(n) = kh./depth(n);
-     Ur(n) = 0.75*0.5*PUV(n).Hrmsu*k(n)./(kh.^3); % RRvR Eqn. 5
+     Ur(n) = 0.75*0.5*PUV(n).Hrmsu*k(n)./(kh.^3); % RRvR Eqn. 6.
      %count=count+1
      %dnsb_rec(n)=dnsb ;
      jtb_rec(n)=jtb ;
@@ -155,7 +142,7 @@ count=1;
                    %         direction and spreading
      Ndir=0;        %deg - direction offset (includes compass error and 
              %      misalignment of cable probe relative to case
-   %           the offset for the Aquadopp Profiler is -1
+   %           the offset for the Aquadopp Profiler is 0
 %
      parms=[lf maxfac minspec Ndir];
      hp = nanmedian(zp);
@@ -168,8 +155,6 @@ count=1;
       
    end
 end
-
-
 %% The directions from PUV need to be flipped 180, I think.
 azr = 180+[PUV(:).azr];
 
@@ -183,11 +168,7 @@ Su = rp.Su;
 Au = rp.Au;
 r = rp.r;
 sk = UBS.ur_sk;
-
-%save workspace for plotting and comparing later
-save puv_proc_FI 
-
-
+% 
 % figure(5); clf
 % subplot(411)
 % h1=plot(dn(ok),[PUV(:).Hrmsu],'linewidth',2);
