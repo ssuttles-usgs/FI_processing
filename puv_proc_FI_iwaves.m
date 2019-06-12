@@ -105,7 +105,11 @@ count=1;
       % TODO - QA/QC, replace sketchy values here
       
       % TODO - Do we want to do any filtering here?
-    
+      %filter for incident wave band only
+      u=iwavesbp(u,fs);
+      v=iwavesbp(v,fs);
+      p=iwavesbp(p,fs);
+      
       
       % quick look at raw data
         figure(4); clf
@@ -124,7 +128,7 @@ count=1;
          xlim=get(gca,'xlim');
          set(gca,'ylim',xlim);
 
-         pause(0.2)
+         pause
      end
      
      % get ubr, Hrms
@@ -185,9 +189,9 @@ r = rp.r;
 sk = UBS.ur_sk;
 
 %save workspace for plotting and comparing later
-save puv_proc_FI 
+save puv_proc_FI_iwaves
 
-
+% 
 % figure(5); clf
 % subplot(411)
 % h1=plot(dn(ok),[PUV(:).Hrmsu],'linewidth',2);
@@ -226,3 +230,5 @@ save puv_proc_FI
 % xlim([dn(1) dn(end)]);
 % datetick('x','keeplimits')
 % print -dpng 'summary_plot.png') 
+
+

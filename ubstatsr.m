@@ -43,7 +43,7 @@ S.maj_sd = 2*majr;
 S.min_sd = 2*minr;
 
 % aim major axis toward East
-S.maj_az = S.maj_az-(S.maj_az >= 180)*180;
+%S.maj_az = S.maj_az-(S.maj_az >= 180)*180;
 S.min_az = S.maj_az-90;
 
 % Calc unrotated stats
@@ -69,6 +69,7 @@ d = d-S.min_az;
 [ur,vr]=xycoord(s,d);
 
 % Calc rotated stats
+S.ur=ur;
 S.ur_sd = std(ur);
 S.ur_sk = skewness(ur);
 [S.ur_e,S.ur_ep]=eskew(ur);
@@ -77,6 +78,7 @@ S.durdt_mn = mean(dudt);
 S.durdt_sd = std( dudt );
 S.durdt_sk = skewness( dudt );
 
+S.vr=vr;
 S.vr_sd = std(vr);
 S.vr_sk = skewness(vr);
 [S.vr_e,S.vr_ep]=eskew(vr);
